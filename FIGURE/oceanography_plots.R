@@ -313,3 +313,196 @@ section_plot <- function(df, x, y, z, bottom = NULL, MLD = NULL, interpolate = F
   ## ####
   
 }
+
+ts_plot <- function(dt,
+  temp_col,
+  sal_col,
+  WM,
+  color_wmpoly = "grey30",
+  xlim = NULL,
+  ylim = NULL,
+  color,
+  zoom = TRUE,
+  nlevels = 6,
+  color_isopyc = "grey90",
+  symbol_shape = 1,
+  symbol_size = 3,
+  symbol_alpha = 0.6,
+  color_scale = NULL,
+  color_var_name = NULL,
+  margin_distr = FALSE,
+  margin_width = 0.15,
+  margin_height = 0.2,
+  plot_data = TRUE,
+  base_size = 10){
+  
+  ## Definitions ####
+  
+  if(color %in% colors()) {
+    scale2color <- FALSE
+  } else if(!is.null(color)) {
+    scale2color <- TRUE
+  } else {
+    scale2color <- FALSE
+    color <- "black"
+  }
+  
+  ## Axis limits
+  
+  if(is.null(xlim) & zoom) {
+    xbreaks <- pretty(range(dt[[sal_col]]), n = nlevels)
+    xlim <- range(xbreaks)
+    
+    if(max(dt[[sal_col]]) < 35.15 & xlim[2] == 36) {
+      xlim <- c(xlim[1], 35.15)
+    }
+    
+  } else if(is.null(xlim)) {
+    xbreaks <- pretty(range(c(dt[[sal_col]], c(32, 35))), n = nlevels)
+    xlim <- range(xbreaks)
+    
+    if(max(dt[[sal_col]]) < 35.15 & xlim[2] == 36) {
+      xlim <- c(xlim[1], 35.15)
+    }
+    
+  } else {
+    xbreaks <- pretty(xlim)
+  }
+  
+  if(is.null(ylim) & zoom) {
+    ybreaks <- pretty(range(dt[[temp_col]]), n = nlevels)
+    ylim <- range(ybreaks)
+  } else if(is.null(ylim)) {
+    ybreaks <- pretty(range(c(dt[[temp_col]], c(-2, 8))), n = nlevels)
+    ylim <- range(ybreaks)
+  } else {
+    ybreaks <- pretty(ylim)
+  }
+  
+  ## Isopycnals
+  
+  if(nlevels > 0) {
+    
+    if(zoom) {
+      rho <- oce::swRho(salinity = xlim, temperature = ylim, pressure = rep(1, length(xlim))) - 1000
+      rho_breaks <- pretty(range(rho), n = nlevels, min.n = nlevels %/% 2)
+    } else {
+      rho <- oce::swRho(salinity = xlim, temperature = ylim, pressure = rep(1, length(xlim))) - 1000
+      rho_breaks <- pretty(range(rho), n = nlevels-1)
+      #rho_breaks <- seq(10, 30, length.out = nlevels)
+    }
+    
+    temp_breaks <- seq(from = ylim[1], to = ylim[2], by = 0.1)
+    
+    isopycs <- lapply(seq_along(rho_breaks), function(i) {
+      data.frame(temp = temp_breaks, rho = rho_breaks[i], sal = oce::swSTrho(temperature = temp_breaks, density = rho_breaks[i], pressure = 1))
+    })
+    
+    isopycs <- do.call(rbind, isopycs)
+    
+  } else {
+    isopycs <- data.frame(temp = NA, rho = NA, sal = NA)
+  }
+  
+  
+  ## Main plot ####
+  
+    p <- ggplot(data = dt, aes_string(x = sal_col, y = temp_col, color = color), alpha = symbol_alpha, size = symbol_size) +
+      scale_y_continuous(expression(paste("Potential temperature (", degree, "C", ")", sep = "")), breaks = ybreaks) +
+      coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
+      theme_classic(base_size = base_size) +
+      theme(axis.line = element_line(size = 0.5),
+            axis.ticks = element_line(size = 0.5),
+            panel.border = element_rect(color = "black", size = 1, fill = NA),
+            legend.background = element_blank())
+  
+  ## Isopycals
+  
+  if(nlevels > 0) {
+    p <- p +
+      scale_x_continuous("Practical salinity", breaks = xbreaks,
+                         sec.axis = sec_axis(~., breaks = isopycs[isopycs$temp == ylim[2], "sal"], labels = isopycs[isopycs$temp == ylim[2], "rho"], name = "Density")) +
+      geom_line(data = isopycs, aes(x = sal, y = temp, group = rho), color = color_isopyc, size = 0.5)
+  } else {
+    p <- p +
+      scale_x_continuous("Practical salinity", breaks = xbreaks)
+  }
+  
+  ## Data points ###
+  
+  if(plot_data) {
+    if(scale2color) {
+      p <- p +
+        geom_point(data = dt, aes_string(x = sal_col, y = temp_col, color = color), shape = symbol_shape, alpha = symbol_alpha, size = symbol_size)
+    } else {
+      p <- p +
+        geom_point(data = dt, aes_string(x = sal_col, y = temp_col), shape = symbol_shape, alpha = symbol_alpha, size = symbol_size, color = color)
+    }
+  }
+  
+  
+  ######################
+  ## Marginal plots ####
+  
+  if(margin_distr & plot_data) {
+    
+    ## Marginal plot for x-axis
+    
+    if(scale2color) {
+      px <- ggplot(data = dt, aes_string(x = sal_col, fill = color)) +
+        geom_density(alpha = 0.5, size = 0.2) +
+        coord_cartesian(xlim = xlim, expand = FALSE) +
+        theme_classic(base_size = base_size) +
+        theme(axis.title = element_blank(),
+              axis.line = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              legend.position = "none")
+      
+    } else {
+      px <- ggplot(data = dt, aes_string(x = sal_col)) +
+        geom_density(alpha = 0.5, size = 0.2, fill = color) +
+        coord_cartesian(xlim = xlim, expand = FALSE) +
+        theme_classic(base_size = base_size) +
+        theme(axis.title = element_blank(),
+              axis.line = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              legend.position = "none")
+      
+    }
+    
+    
+    ## Marginal plot for y-axis
+    
+    if(scale2color) {
+      py <- ggplot(data = dt, aes_string(x = temp_col, fill = color)) +
+        geom_density(alpha = 0.5, size = 0.2) +
+        coord_flip(xlim = ylim, expand = FALSE) +
+        theme_classic(base_size = base_size) +
+        theme(axis.title = element_blank(),
+              axis.line = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              legend.position = "none")
+    } else {
+      py <- ggplot(data = dt, aes_string(x = temp_col)) +
+        geom_density(alpha = 0.5, size = 0.2, fill = color) +
+        coord_flip(xlim = ylim, expand = FALSE) +
+        theme_classic(base_size = base_size) +
+        theme(axis.title = element_blank(),
+              axis.line = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              legend.position = "none")
+      
+    }
+    
+    
+  }
+  
+  
+  ## Finally plotting ####
+  
+print(p)
+}
