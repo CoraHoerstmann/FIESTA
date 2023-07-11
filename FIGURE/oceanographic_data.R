@@ -36,20 +36,22 @@ stn3_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCE
 stn4_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCESSED/AE2215_stn04_cast1.cnv")
 stn5_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCESSED/AE2215_stn05_cast1.cnv")
 stn6_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCESSED/AE2215_stn06_cast1.cnv")
+#stn7_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCESSED/AE2215_stn07_cast1.cnv")
+stn8_c1 = read.ctd("/Users/corahoerstmann/Documents/MIO_FIGURE/AE_2215/RAW/PROCESSED/AE2215_stn08_cast1.cnv")
 
 #check out the variables
 
 stn0_c1@data%>%as.data.frame()%>%dplyr::glimpse()
 
 #plot
-stn0_c1%>%plot()
-stn1_c1%>%plot()
-stn2_c1%>%plot()
-stn3_c1%>%plot()
-stn4_c1%>%plot()
-stn5_c1%>%plot()
-stn6_c1%>%plot()
-
+stn0_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn1_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn2_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn3_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn4_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn5_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn6_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
+stn8_c1%>%oce::plotProfile(plim = c(250, 0), Slim = c(34,37), Tlim = c(10,32))
 #stn0_c1_downcast = stn0_c1%>%
 #ctdTrim(method = "downcast")%>% #already discarded i the seabird software
 #  ctdDecimate(p = 0.2)
@@ -71,7 +73,7 @@ df_st3_c1 <- as.data.frame(stn3_c1@data)
 df_st4_c1 <- as.data.frame(stn4_c1@data)
 df_st5_c1 <- as.data.frame(stn5_c1@data)
 df_st6_c1 <- as.data.frame(stn6_c1@data)
-
+df_st8_c1 <- as.data.frame(stn8_c1@data)
 #remove NAs ## that was only an issue in the previously processed files. 
 
 #discard <- apply(df_st1_c1, 1, function(x) any(is.na(x)))
@@ -98,12 +100,14 @@ df_st5_c1 <- df_st5_c1%>%cbind(station = paste0("S5_C1"))%>%
   cbind(mld = mld_m(df_st5_c1, density, depth, ref.depth_min=4, ref.depth_max=8, criteria=c(0.03, 0.01)))
 df_st6_c1 <- df_st6_c1%>%cbind(station = paste0("S6_C1"))%>%
   cbind(mld = mld_m(df_st6_c1, density, depth, ref.depth_min=4, ref.depth_max=8, criteria=c(0.03, 0.01)))
+df_st8_c1 <- df_st8_c1%>%cbind(station = paste0("S8_C1"))%>%
+  cbind(mld = mld_m(df_st8_c1, density, depth, ref.depth_min=4, ref.depth_max=8, criteria=c(0.03, 0.01)))
 
 ###
 
 #create a section from the files
 
-section1 <- rbind(df_st0_c1, df_st1_c1, df_st2_c1, df_st3_c1, df_st4_c1, df_st5_c1, df_st6_c1)
+section1 <- rbind(df_st0_c1, df_st1_c1, df_st2_c1, df_st3_c1, df_st4_c1, df_st5_c1, df_st6_c1, df_st8_c1)
 
 #plot the map
 
@@ -142,6 +146,9 @@ section_plot(section1, "latitude", "depth", "fluorescence", interpolate = TRUE, 
 section_plot(section1, "longitude", "depth", "oxygen", interpolate = TRUE, xlab = "Latitude",
              zlab = "oxygen", contour_color = "white", zscale = "viridis")
 
+section_plot(section1, "longitude", "depth", "salinity", interpolate = TRUE, xlab = "Latitude",
+             zlab = "salinity", contour_color = "white", zscale = "viridis")
+
 section1_top100 <- section1%>%filter(depth <= 125)
 
 section1_top500 <- section1%>%filter(depth <= 500)
@@ -158,9 +165,6 @@ section_plot(section1_top100, "longitude", "depth", "salinity", interpolate = TR
 
 
 section_plot(section1_top100, "longitude", "depth", "oxygen", interpolate = TRUE, xlab = "Longitude",
-             zlab = "oxygen", contour_color = "white", zscale = "viridis")
-
-section_plot(section1_top500, "longitude", "depth", "oxygen", interpolate = TRUE, xlab = "Longitude",
              zlab = "oxygen", contour_color = "white", zscale = "viridis")
 
 ##TS plot

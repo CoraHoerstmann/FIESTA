@@ -42,7 +42,7 @@ N2_data$Niskin <- gsub(".*NISK ", "",N2_data$ST_N)
 N2_data$Niskin <- gsub(" FIX.*", "",N2_data$Niskin)
 
 N2_NA_CTD <- dplyr::inner_join(IRMS_NA[,c(2,15:17)], CTD_N2, by = c('Station', 'Niskin'))
-N2_IRMS_CTD <- dplyr::inner_join(N2_data, CTD_N2, by = c('Station', 'Niskin'))
+N2_IRMS_CTD <- dplyr::inner_join(N2_data, CTD_N2[,c(1:4,9:22)], by = c('Station', 'Niskin'))
 
 N2_data_all_CTD <- dplyr::left_join(N2_IRMS_CTD, N2_NA_CTD[,c(1:3,15)], by = c("Station", "Desired_Depth..m."))
 
@@ -124,4 +124,6 @@ N2_UW$label_percent_MIMS <- N2_UW$X15N.14N.At..sample
 
 N2_UW$N2 <- (N2_UW$PN_nmol_L * (N2_UW$at_enriched - N2_UW$at_NA))/((N2_UW$label_percent_MIMS - N2_UW$at_NA)*N2_UW$Filtration_time_h)*24
 
+## Previous data
 
+DB_N2_Strucutres <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/Satellite_N2_DB/N2_eddies_NorthAtlantic_mean.csv")

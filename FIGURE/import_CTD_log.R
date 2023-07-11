@@ -1,5 +1,24 @@
 
 CTD_logs <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/CTDCastSheets_FIGURE-CARING/SUMMARY_CTD_CASTS_FIGURE.csv")
+ADCP <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/Stephanie_20230419/Attribute_TABLE.csv")
+
+ADCP$direction <- (180/3.14) * raster::atan2((ADCP$uship),(ADCP$vship))
+ADCP$speed <- sqrt(((ADCP$uship)^2 + (ADCP$vship)^2))
+
+
+
+ADCP$Latitude_2 <- round(ADCP$Y, digits = 2)
+ADCP$Longitude_2 <- round(ADCP$X, digits = 2)
+
+ADCP <- ADCP%>%group_by(Latitude_2, Longitude_2)%>%
+  summarise(u_com = mean(uship), v_com = mean(vship), direction = mean(direction),
+            speed = mean(speed))
+
+##Calculate geostrophic current
+
+ADCP$direction <- (180/3.14) * raster::atan2((ADCP$u_com),(ADCP$v_com))
+ADCP$speed <- sqrt(((ADCP$u_com)^2 + (ADCP$v_com)^2))
+
 
 CTD_logs$Latitude_down..min.N. <- gsub(",", ".", CTD_logs$Latitude_down..min.N.)
 CTD_logs$Long_down..min.W. <- gsub(",", ".", CTD_logs$Long_down..min.W.)
