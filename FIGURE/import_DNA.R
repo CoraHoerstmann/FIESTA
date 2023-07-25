@@ -1,7 +1,7 @@
 
 DNA_meta <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/FIGURE_DNA_mastersheet.csv")
 DNA_meta$Int_Order <- sprintf("%03d", DNA_meta$Int_Order)
-#NOTE SO FAR ONLY TRICHO
+
 qPCR <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/FIGURE_qPCR.csv")
 
 
@@ -38,7 +38,7 @@ qPCR_1$GammaA_avg.g.c..ul.extract <- as.numeric(qPCR_1$GammaA_avg.g.c..ul.extrac
 qPCR_1$GammaA_g.c._L_Dil_samples <- (qPCR_1$GammaA_avg.g.c..ul.extract*50/qPCR_1$Volume_ml)*1000
 qPCR_1$GammaA_g.c._L_seawater <- qPCR_1$GammaA_g.c._L_Dil_samples*qPCR_1$Dilution.factor
 
-
+#write.csv(qPCR_1, "FIGURE_qPCR_all.csv")
 ###
 
 

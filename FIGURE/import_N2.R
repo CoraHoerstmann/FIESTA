@@ -124,6 +124,11 @@ N2_UW$label_percent_MIMS <- N2_UW$X15N.14N.At..sample
 
 N2_UW$N2 <- (N2_UW$PN_nmol_L * (N2_UW$at_enriched - N2_UW$at_NA))/((N2_UW$label_percent_MIMS - N2_UW$at_NA)*N2_UW$Filtration_time_h)*24
 
+
+#calculate mean N2 rates
+
+N2_fromR <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/R_N2_all_data.csv")
+
 ## Previous data
 
 DB_N2_Strucutres <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/Satellite_N2_DB/N2_eddies_NorthAtlantic_mean.csv")

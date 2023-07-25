@@ -1,5 +1,6 @@
 ASV16S <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/seqtab_all_FIGURE_16S.csv", row.names = 1)
 taxonomy_16S <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/taxonomy_FIGURE_16S_SILVAv138.1.csv", sep = ";", row.names = 1)
+meta_16S_4ADCP <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/meta_16S_forADCP.csv")
 colnames(ASV16S) <- gsub("X", "", colnames(ASV16S))
 colnames(ASV16S) <- gsub(".16S", "", colnames(ASV16S))
 
@@ -70,8 +71,10 @@ a16S_meta <- rbind(a16SM_UW, a16SMM_CTD)
 
 a16S_meta$Latitude_2 <- round(a16S_meta$Latitude, digits = 2)
 a16S_meta$Longitude_2 <- round(a16S_meta$Longitude, digits = 2)
-
+a16S_meta <- left_join(a16S_meta, meta_16S_4ADCP[,c(1,7:12)], by = "No")
 #aa <- left_join(a16S_meta, ADCP, by = c("Latitude_2", "Longitude_2"))
+#a16S_metaX <- left_join(a16S_meta, nifH_meta[,c(2,21:26)], by = "No")
+#write.csv(a16S_metaX, "meta_16S_forADCP.csv")
 
 ##CLEAN UP 
-rm(a16SMM_CTD, a16S_meta_f, a16S_meta2, a16S_meta_f, a16S_meta2t)
+rm(a16SMM_CTD, a16S_meta_f, a16S_meta2t)
