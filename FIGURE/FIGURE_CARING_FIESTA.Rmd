@@ -12,6 +12,7 @@ require(oce)
 require(ocedata)
 require(anytime) #date format is unambigious for base function
 require(reshape2)
+require(dada2); packageVersion("dada2")
 
 #for printing the oceanographic maps:
 library("rnaturalearth")
@@ -36,6 +37,8 @@ source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_CTD_log.R")
 
 #note that this important subscripts are loaded:
 source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/oceanography_plots.R")
+
+
 ```
 #import nutrients
 
@@ -52,6 +55,8 @@ source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_N2.R")
 check tutorial here:
 https://uc-r.github.io/t_test
 ```{r N2 stats}
+require(stats); packageVersion("stats")
+
 #check whether east of the GS match those of previous measurements
 N2_east <- DB_N2_Strucutres%>%filter(str_detect(Structure, "NA-"))
 N2_east <- N2_east%>%filter(DEPTH..m. < 110)
@@ -123,19 +128,31 @@ print(stationmap_CTD)
 
 
 #calculate distance between points
-#library("geosphere")
-#my_points <- qPCR_UW[,c(28,29)]
-#dist_mat <- distm(my_points, fun = distGeo)
+library("geosphere"); packageVersion("geosphere")
+all_data_distances <- all_data[,c(3:5,10)]
+my_points <- all_data_distances[c(25,68),c(2,3)]
+my_points$Latitude <- NULL
+my_points$Latitude <- all_data_distances[c(25,68),2]
+dist_mat <- distm(my_points, fun = distGeo) #result in m
 
+256190.1/1000
+
+#average speed between station 0 and 1
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA[,c(4,7,8)]
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA_St0_1%>%filter(Longitude < -68.99790)
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA_St0_1%>%filter(Longitude > -70.99585)
+mean(ADCP_speed_noNA_St0_1$speed_74.93)
+(1/mean(ADCP_speed_noNA_St0_1$speed_74.93))*256190.1
+1048287/60/60/24
 ```
 
 
 ```{r N2 plots, echo=FALSE}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/N2_plots.R")
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/3D_plot_plotly.R")
 ```
 
 ```{r qPCR plots, echo=FALSE}
-#source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/")
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/DNA_plot.R")
 ```
 
 
@@ -149,31 +166,28 @@ source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_16S.R")
 
 CLR transformation
 ```{r}
+library("zCompositions"); packageVersion("zCompositions")
 nifH_ASV_CLR <- clr(nifH_ASV,1)
 nifH_ait <- dczm(nifH_ASV,1)
 nifH_taxonomy_CLR <- nifH_taxonomy_v2%>%filter(X %in% rownames(nifH_ASV_CLR))
 ```
 multivariate analysis
 ```{r}
-
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/sequence_multivariate_analysis.R")
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/16S_multivariateAnalysis.R")
+#important subscript loaded within file
+#source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/RDA_function.R")
 ```
+
+hierarchical clustering
+```{r}
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/Hclust_comparison.R")
+```
+
 
 #eddys in the North Atlantic
 ```{r}
-
 source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/eddy_N2_compiled_Data_NorthAtlantic.R")
-
-N2_structure_DB <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/Satellite_N2_DB/N2_DB_compiled_Fine_scale_structures.csv")
-N2_structure_DB$N2.Rate.nmol.L.1.d.1 <- as.numeric(N2_structure_DB$N2.Rate.nmol.L.1.d.1)
-
-N2_structure_DB <- N2_structure_DB%>%filter(!Fine.scale.Structure..Open.Oean..coast.shelf == "unknown")
-
-DB <- ggplot(data = N2_structure_DB, aes(x = Fine.scale.Structure..Open.Oean..coast.shelf, y = N2.Rate.nmol.L.1.d.1))+
-  geom_violin(trim=FALSE)+
-  ylim(0,100)+
-  stat_summary(fun.y=median, geom="point", size=2, color="red")
-
-print(DB)
-
+source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/stats_model_output.R")
 ```
 

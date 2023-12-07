@@ -91,9 +91,9 @@ print(ggords::ggrda(ASV.clr.rda, group = grl, spearrow = NULL, farrow = 0.1, fzo
     scale_shape_manual(name = "Groups",values = c(16,16,16,16,16,16,16,16,16,16)))
     
   
-  print(ggords::ggrda(ASV.clr.rda, group = grl2, spearrow = NULL, farrow = 0.1, fzoom = 5, ellipse = F, scaling = 1, spe = F)+
-          scale_color_manual(name = "Groups", values = c("#8e2566","darkgrey","grey","lightblue","blue","red", "#6DB72C","pink", "seagreen", "#F9D606", "orange2", "#8f09af"))+
-          scale_shape_manual(name = "Groups",values = c(10,10,10,10,10,10,10,10,10,10,10,10)))
+ # print(ggords::ggrda(ASV.clr.rda, group = grl2, spearrow = NULL, farrow = 0.1, fzoom = 5, ellipse = F, scaling = 1, spe = F)+
+#          scale_color_manual(name = "Groups", values = c("#8e2566","darkgrey","grey","lightblue","blue","red", "#6DB72C","pink", "seagreen", "#F9D606", "orange2", "#8f09af"))+
+#          scale_shape_manual(name = "Groups",values = c(10,10,10,10,10,10,10,10,10,10,10,10)))
           
   #print(ggrda(ASV.clr.rda,group = curl.G, spearrow = NULL, farrow = 0.1, fzoom = 5, ellipse = T, scaling = 2, spe = F)+
   #        scale_color_manual(name = "Groups",values = c("seagreen", "orange2")) +
@@ -106,7 +106,7 @@ print(ggords::ggrda(ASV.clr.rda, group = grl, spearrow = NULL, farrow = 0.1, fzo
   
   
   
-  #Bioclimatic subzone
+  #Test physical classifications
   
   print(adonis2(
     formula = ASV.ait.t ~ Pysical_Classification,

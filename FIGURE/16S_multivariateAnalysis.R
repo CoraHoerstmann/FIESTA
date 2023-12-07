@@ -2,7 +2,7 @@
 #load packages
 require("phyloseq"); packageVersion("phyloseq")
 require(ggbiplot)
-require(vegan)
+require(vegan); packageVersion("vegan")
 require("wesanderson"); packageVersion("wesanderson")
 require("fantaxtic"); packageVersion("fantaxtic")
 
@@ -142,7 +142,7 @@ a16S_groupDistances <- as.data.frame(mod_small$group.distances)
 a16S_groupDistances$Sampling_method <- rownames(a16S_groupDistances)
 a16S_CTD_VV <- a16S_meta_ST%>%group_by(Sampling_method)%>%
   summarise(mean_w = mean(mean_w))
-nifH_groupDistances <- left_join(nifH_groupDistances, nifH_CTD_VV, by = "Sampling_method")
+a16S_groupDistances <- left_join(a16S_groupDistances, a16S_CTD_VV, by = "Sampling_method")
 
-cor_Dw <- cor.test(nifH_groupDistances$`mod_small$group.distances`, -(nifH_groupDistances$mean_w), method="pearson")
+cor_Dw <- cor.test(a16S_groupDistances$`mod_small$group.distances`, -(a16S_groupDistances$mean_w), method="pearson")
 cor_Dw

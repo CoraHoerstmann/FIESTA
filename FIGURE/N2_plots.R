@@ -2,141 +2,128 @@
 
 p <- N2_data_all_CTD%>%
   ggplot()+
-  geom_point(aes(x = Station, y = N2, color = -(Desired_Depth..m.)))+
-  scale_color_viridis() + 
+  geom_point(aes(y = N2, x = -(Desired_Depth..m.), color = Station))+
+  geom_smooth(aes(y = N2, x = -(Desired_Depth..m.), group=Station, color = Station), method = "loess", level=0.50)+
+  scale_color_manual(values = c("#0f3cf7","#f45a45","#ee9a00","#f9d606","#58d805", "#3f560d","#4af496"))+
+  coord_flip()+
   theme_bw() +
-  labs(x = "Station", y = "fixation rate [nmol L-1 day-1]")
+  labs(x = "Depth", y = "fixation rate [nmol L-1 day-1]")
 
 print(p)
 
-p <- N2_data_all_CTD%>%
-  ggplot()+
-  geom_point(aes(x = Longitude, y = N2, fill = -(Desired_Depth..m.)), shape = 21, size = 1.8)+
-  scale_fill_viridis() + 
-  theme_bw() +
-  labs(x = "Longitude", y = "fixation rate [nmol L-1 day-1]")
+#p <- N2_data_all_CTD%>%
+#  ggplot()+
+#  geom_point(aes(x = Longitude, y = N2, fill = -(Desired_Depth..m.)), shape = 21, size = 1.8)+
+#  scale_fill_viridis() + 
+#  theme_bw() +
+#  labs(x = "Longitude", y = "fixation rate [nmol L-1 day-1]")
 
-print(p)
+#print(p)
 
 
-#UW
-
-u <- N2_UW%>%
-  ggplot()+
-  geom_point(aes(x = Longitude, y = N2), fill = "#FCE51E", shape = 21, size = 1.8)+
-  theme_bw() +
-  labs(x = "Longitude", y = "fixation rate [nmol L-1 day-1]")
-
-print(u)
-
-NN <- N2_fromR%>%
-  ggplot()+
-  geom_point(aes(x=Longitude, y=-(Depth..m.), size=Avg.NFR))
-
-print(NN)
 ##or merge the two datasets
 
 common_N2_data <- c("Name", "Latitude", "Longitude", "N2", "C_N", "Desired_Depth..m.")
 N2_UW$Desired_Depth..m. <- 5
 
+
 all_N2 <- rbind(N2_data_all_CTD[,common_N2_data], N2_UW[,common_N2_data])
 
-p <- all_N2%>%
-  ggplot()+
-  geom_point(aes(x = Longitude, y = N2, fill = -(Desired_Depth..m.)), shape = 21, size = 1.8)+
-  scale_fill_viridis() + 
-  theme_bw() +
-  labs(x = "Longitude", y = "fixation rate [nmol L-1 day-1]")
 
-print(p)
+####################
 
-p <- all_N2%>%
-  ggplot()+
-  geom_point(aes(x = Longitude, y = -(Desired_Depth..m.), fill = N2, size = N2), shape = 21, alpha = 0.8)+
-  scale_fill_viridis() + 
-  theme_bw() +
-  labs(x = "Longitude", y = "depth")
+# Load libraries
+library(plot3D)
+library(rgl)
+library(plot3Drgl)
 
-print(p)
+# Define coordinates
+x <- sep.l <- all_N2$Longitude
+y <- pet.l <- all_N2$Latitude
+z <- sep.w <- -(all_N2$Desired_Depth..m.)
+u <- all_N2$N2
+colvar <- all_N2$N2
+# Add small dots on basal plane and on the depth plane
+scatter3D_fancy <- function(x, y, z,..., colvar = u)
+{
+  panelfirst <- function(pmat) {
+    XY <- trans3D(x, y, z = rep(min(z), length(z)), pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = colvar, pch = ".", 
+              cex = 1, add = TRUE, colkey = FALSE)
+    
+    XY <- trans3D(x = rep(min(x), length(x)), y, z, pmat = pmat)
+    scatter2D(XY$x, XY$y, colvar = colvar, pch = ".", 
+              cex = 1, add = TRUE, colkey = FALSE)
+  }
+  scatter3D(x, y, z, ..., colvar = colvar, panel.first=panelfirst,
+            colkey = list(length = 0.5, width = 0.5, cex.clab = 0.75)) 
+}
 
+# Define like color
+scatter3D_fancy(x, y, z, pch = 16,
+                ticktype = "detailed", theta = -30, d = 2,
+                main = "Iris data",  clab = c("Petal", "Width (cm)"))
+
+
+###https://www.andreaperlato.com/graphpost/how-to-create-3d-and-4d-plot/
+#####################
+#c = all_N2$N2
+#c = cut(c, breaks=77)
+#colors2 <- rainbow(77)[as.numeric(c)]
+#scatterplot3d(x=all_N2$Longitude, y=all_N2$Latitude, z=-(all_N2$Desired_Depth..m.), color = colors2,
+#              pch = 16, scale.y = 0.5, angle = 65)
+#color.bar(rainbow(77), min(c), max(c), title='C', ticks=round(seq(min(c), max(c), len=11), 2))
 
 #all_data <- right_join(qPCR_all, all_N2, by = c("Latitude", "Longitude", "Desired_Depth..m."))
 #write.csv(all_data, "FIGURE_all_data.csv")
 ##This file is made in R so needs to be manually updated with the column "biodepth"
 ##save files with 10x3.6 format
 #all_data <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/FIGURE_all_data.csv")
-all_data_SFC <- all_data%>%filter(biodepth == "SFC")
-
-p <- ggplot()+
-  geom_point(data = all_data_SFC, aes(x=Longitude, y=log_Tricho), fill="#F93F21", size=3, shape=21, alpha=0.8)+
-  geom_point(data = all_data_SFC, aes(x=Longitude, y=log_UCYN_A1), fill="#EDB106",size=3, shape=21, alpha=0.6)+
-  geom_point(data = all_data_SFC, aes(x=Longitude, y=log_GammaA), fill="#A30D79", size=3, shape=21, alpha=0.4)+
-  ylim(0,14)+
-  xlim(-73.7,-68)
-  
-print(p)
-
-f <- ggplot()+
-  geom_point(data = all_data_SFC, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
-  ylim(0,60)+
-  xlim(-73.7,-68)
-
-print(f)
+#all_data_SFC <- all_data%>%filter(biodepth == "SFC")
 
 
-all_data_aDCM <- all_data%>%filter(biodepth == "aDCM")
 
-p <- ggplot()+
-  geom_point(data = all_data_aDCM, aes(x=Longitude, y=log_Tricho), fill="#F93F21", size=3, shape=21, alpha=0.8)+
-  geom_point(data = all_data_aDCM, aes(x=Longitude, y=log_UCYN_A1), fill="#EDB106",size=3, shape=21, alpha=0.6)+
-  geom_point(data = all_data_aDCM, aes(x=Longitude, y=log_GammaA), fill="#A30D79", size=3, shape=21, alpha=0.4)+
-  ylim(0,14)+
-  xlim(-73.7,-68)
+#f <- ggplot()+
+#  geom_point(data = all_data_SFC, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
+#  ylim(0,60)+
+#  xlim(-73.7,-68)
 
-print(p)
+#print(f)
 
-f <- ggplot()+
-  geom_point(data = all_data_aDCM, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
-  ylim(0,60)+
-  xlim(-73.7,-68)
 
-print(f)
+#all_data_aDCM <- all_data%>%filter(biodepth == "aDCM")
 
-all_data_DCM <- all_data%>%filter(biodepth == "DCM")
 
-p <- ggplot()+
-  geom_point(data = all_data_DCM, aes(x=Longitude, y=log_Tricho), fill="#F93F21", size=3, shape=21, alpha=0.8)+
-  geom_point(data = all_data_DCM, aes(x=Longitude, y=log_UCYN_A1), fill="#EDB106",size=3, shape=21, alpha=0.6)+
-  geom_point(data = all_data_DCM, aes(x=Longitude, y=log_GammaA), fill="#A30D79", size=3, shape=21, alpha=0.4)+
-  ylim(0,14)+
-  xlim(-73.7,-68)
+#f <- ggplot()+
+#  geom_point(data = all_data_aDCM, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
+#  ylim(0,60)+
+#  xlim(-73.7,-68)
 
-print(p)
+#print(f)
 
-f <- ggplot()+
-  geom_point(data = all_data_DCM, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
-  ylim(0,60)+
-  xlim(-73.7,-68)
+#all_data_DCM <- all_data%>%filter(biodepth == "DCM")
 
-print(f)
 
-all_data_deep <- all_data%>%filter(biodepth == "bDCM")
 
-p <- ggplot()+
-  geom_point(data = all_data_deep, aes(x=Longitude, y=log_Tricho), fill="#F93F21", size=3, shape=21, alpha=0.8)+
-  geom_point(data = all_data_deep, aes(x=Longitude, y=log_UCYN_A1), fill="#EDB106",size=3, shape=21, alpha=0.6)+
-  geom_point(data = all_data_deep, aes(x=Longitude, y=log_GammaA), fill="#A30D79", size=3, shape=21, alpha=0.4)+
-  ylim(0,14)+
-  xlim(-73.7,-68)
+#f <- ggplot()+
+#  geom_point(data = all_data_DCM, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
+#  ylim(0,60)+
+#  xlim(-73.7,-68)
 
-print(p)
+#print(f)
 
-f <- ggplot()+
-  geom_point(data = all_data_deep, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
-  ylim(0,60)+
-  xlim(-73.7,-68)
+#all_data_deep <- all_data%>%filter(biodepth == "bDCM")
 
-print(f)
+
+
+#print(p)
+
+#f <- ggplot()+
+#  geom_point(data = all_data_deep, aes(x=Longitude, y=N2), fill="black", size=3, shape=18, alpha=1)+
+#  ylim(0,60)+
+#  xlim(-73.7,-68)
+
+#print(f)
 #safe as 500 x 200
 #or for pdf as 10x4
 

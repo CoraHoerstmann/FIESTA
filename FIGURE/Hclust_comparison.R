@@ -1,9 +1,9 @@
 
 ##from https://cran.r-project.org/web/packages/dendextend/vignettes/Cluster_Analysis.html
 
-library(dendextend)
+library(dendextend); packageVersion("dendextend")
 library(colorspace) # get nice colors
-
+library(stats); packageVersion("stats")
 
 ###16S
 
@@ -48,9 +48,9 @@ dend <- hang.dendrogram(dend,hang_height=0.1)
 dend <- set(dend, "labels_cex", 0.5)
 # And plot:
 par(mar = c(3,3,3,7))
-plot(dend, 
-     main = "Dendogran", 
-     horiz =  TRUE,  nodePar = list(cex = .007))
+print(plot(dend, 
+     main = "Dendogram 16S", 
+     horiz =  TRUE,  nodePar = list(cex = .007)))
 #legend("topleft", legend = iris_species, fill = rainbow_hcl(5))
 
 #############
@@ -148,14 +148,13 @@ species_labels_nifHR <- CLUSTER_ASV_nifH_R[,1752]
 species_col_nifHR <- rev(rainbow_hcl(19))[as.numeric(species_labels_nifHR)]
 
 ##
-CLUSTER_ASV_nifH_R$No <- NULL
-CLUSTER_ASV_nifH_R$Main_Bin <- NULL
 
 CLUSTER_ASV_16S_R <- CLUSTER_ASV_16S%>%filter(No %in% CLUSTER_ASV_nifH_R$No)
 rownames(CLUSTER_ASV_16S_R) <- CLUSTER_ASV_16S_R$No
 CLUSTER_ASV_16S_R$No <- NULL
 CLUSTER_ASV_16S_R$Main_Bin <- NULL
-
+CLUSTER_ASV_nifH_R$No <- NULL
+CLUSTER_ASV_nifH_R$Main_Bin <- NULL
 #remove ASV with 0s
 CLUSTER_ASV_nifH_RT <- t(CLUSTER_ASV_nifH_R)
 CLUSTER_ASV_nifH_RT <- as.data.frame(CLUSTER_ASV_nifH_RT[rowSums(CLUSTER_ASV_nifH_RT[])>0,])
@@ -237,9 +236,9 @@ corrplot::corrplot(COM_dendlist_cor_spearman, "pie", "lower")
 
 # The `which` parameter allows us to pick the elements in the list to compare
 #change the "which" option to the two methods compared. here wardD2
-COM_dendlist %>% dendlist(which = c(2,10)) %>% ladderize %>% 
+print(COM_dendlist %>% dendlist(which = c(2,10)) %>% ladderize %>% 
   set("branches_k_color", k=4) %>% 
   untangle(method = "labels", k_seq = 3:20) %>%
   # set("clear_branches") %>% #otherwise the single lines are not black, since they retain the previous color from the branches_k_color.
-  tanglegram(faster = TRUE) # (common_subtrees_color_branches = TRUE)
+  tanglegram(faster = TRUE)) # (common_subtrees_color_branches = TRUE)
 

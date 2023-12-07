@@ -11,7 +11,7 @@ library(stringr)
 
 
 ## Construct Paths
-work_dir <- "/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/"
+work_dir <- "/Users/corahoerstmann/Documents/MIO_eIMPACT/DNA/AllGenetics_Amplicons/16S_amplicons/"
 raw_dir <- file.path(work_dir,"raw_unpacked") # CHANGE ME to the directory containing the fastq files after unzipping.
 
 ##Note: Elena's files removed in this folder! only continue with the FIGURE samples. 
@@ -174,8 +174,8 @@ table(nchar(getSequences(seqtab)))
 #REMOVE CHIMERAS AND EXPORT ASV TABLE
 seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
 dim(seqtab.nochim)
-write.csv(t(seqtab.nochim), "/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/seqtab_all_FIGURE_16S.csv", quote=FALSE ) # CHANGE ME to output directory.
-saveRDS(filterOut, file = "/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/seqtab_nochim_FIGURE_16S.RDA") # CHANGE ME to output directory.
+write.csv(t(seqtab.nochim), "/Users/corahoerstmann/Documents/MIO_eIMPACT/DNA/AllGenetics_Amplicons/16S_amplicons/seqtab_all_eIMPACT_16S.csv", quote=FALSE ) # CHANGE ME to output directory.
+saveRDS(filterOut, file = "/Users/corahoerstmann/Documents/MIO_eIMPACT/DNA/AllGenetics_Amplicons/16S_amplicons/seqtab_nochim_eIMPACT_16S.RDA") # CHANGE ME to output directory.
 #obtain the frequencies of chimeras in the dataset
 sum(seqtab.nochim)/sum(seqtab)
 
@@ -193,15 +193,15 @@ track_reads[is.na(track_reads)] <- 0
 rownames(track_reads) <- track_reads$sample
 track_reads <- track_reads[,-1]
 
-write.table(track_reads, "/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/tracked_reads_FIGURE_16S.txt") # CHANGE ME to output directory.
+write.table(track_reads, "/Users/corahoerstmann/Documents/MIO_eIMPACT/DNA/AllGenetics_Amplicons/16S_amplicons/tracked_reads_eIMPACT_16S.txt") # CHANGE ME to output directory.
 
 
 #TAXONOMY
 #with silva 138.1 for DADA2 https://doi.org/10.5281/zenodo.4587946
 
 ##In case of re-doing the annotation the sequence table can be imported and modified from the import file
-seqtab.nochim <- (ASV16S)
-seqtab.nochim <- t(seqtab.nochim)
+#seqtab.nochim <- (ASV16S)
+#seqtab.nochim <- t(seqtab.nochim)
 refsr <- readFasta("/Users/corahoerstmann/Documents/MIO_general_Mastderdocs/silva_species_assignment_v138.1.fasta")
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/corahoerstmann/Documents/MIO_general_Mastderdocs/silva_nr99_v138.1_wSpecies_train_set.fa" , multithread=TRUE, minBoot = 0)
 taxa <- as.data.frame(taxa)
@@ -210,5 +210,5 @@ taxa.print <- taxa # Removing sequence rownames for display only
 rownames(taxa.print) <- NULL
 head(taxa.print)
 #write table
-write.table(taxa, "/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/taxonomy_FIGURE_16S_SILVAv138.1.csv", sep = ";", quote=F, col.names=NA)
+write.table(taxa, "/Users/corahoerstmann/Documents/MIO_eIMPACT/DNA/AllGenetics_Amplicons/16S_amplicons/taxonomy_eIMPACT_16S_SILVAv138.1.csv", sep = ";", quote=F, col.names=NA)
 

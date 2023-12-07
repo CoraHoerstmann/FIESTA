@@ -77,5 +77,5 @@ qPCR_all$log_GammaA <- log10(qPCR_all$GammaA_g.c._L_seawater + 1)
 
 qPCR_all <- qPCR_all %>% replace(is.na(.), 0)
 qPCR_all_SFC <- qPCR_all%>%filter(Desired_Depth..m. < 10)
-write.csv(qPCR_all, "FIGURE_qPCR_all_calculated.csv")
-write.csv(qPCR_all, "FIGURE_qPCR_all_calculated_SFC.csv")
+#write.csv(qPCR_all, "FIGURE_qPCR_all_calculated.csv")
+#write.csv(qPCR_all, "FIGURE_qPCR_all_calculated_SFC.csv")
