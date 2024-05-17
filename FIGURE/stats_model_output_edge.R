@@ -11,6 +11,7 @@ stats_CE$vol_core <- (pi*(stats_CE$Effective.Radius..km.*0.36)^2*1000)*100#based
 stats_CE$vol_core_ow <- (pi*(stats_CE$Effective.Radius..km.*0.41)^2*1000)*100
 stats_CE$vol_periphery <- stats_CE$vol_total - stats_CE$vol_core
 stats_CE$vol_periphery_ow <- stats_CE$vol_total - stats_CE$vol_core_ow
+
 #continue with OW
 #calculate area and area percent
 stats_CE$area_total <- (pi*stats_CE$Effective.Radius..km.^2*1000)
@@ -20,7 +21,7 @@ stats_CE$area_periphery/stats_CE$area_total*100
 
 #conservative: remove those eddies that are not alive during the summer
 stats_CE_conservative <- stats_CE%>%filter(End.Time..month. > 5)
-stats_CE_conservative <- stats_CE_conservative%>%filter(Start.Time..month. < 9)
+stats_CE_conservative <- stats_CE_conservative%>%filter(Start.Time..month. < 10)
 #calculate averages per year
 
 stats_CE_conservative_average_year <- stats_CE_conservative%>%group_by(Start.Time..year.)%>%
@@ -45,6 +46,11 @@ stats_CE_conservative_average_year$N_input_C_core/stats_CE_conservative_average_
 stats_CE_conservative_average_year$N_input_C_core_extrapolated <- (mean(C_eddy_core$N2)/1000)*stats_CE_conservative_average_year$Lifetime_mean*stats_CE_conservative_average_year$vol_total_mean*stats_CE_conservative_average_year$n
 
 stats_CE_conservative_average_year$N_input_C_total/stats_CE_conservative_average_year$N_input_C_core_extrapolated
+
+#overestimation
+stats_CE_conservative_average_year$N_input_C_edge_extrapolated <- (mean(C_eddy_periphery$N2)/1000)*stats_CE_conservative_average_year$Lifetime_mean*stats_CE_conservative_average_year$vol_total_mean*stats_CE_conservative_average_year$n
+stats_CE_conservative_average_year$N_input_C_edge_extrapolated/stats_CE_conservative_average_year$N_input_C_total
+
 #how much more is the vol i the periphery?
 
 stats_CE_conservative_average_year$vol_core_mean/(stats_CE_conservative_average_year$vol_core_mean + stats_CE_conservative_average_year$vol_periphery_mean)

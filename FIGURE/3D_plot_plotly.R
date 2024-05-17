@@ -16,7 +16,7 @@ all_N2 <- rbind(N2_data_all_CTD[,common_N2_data], N2_UW[,common_N2_data])
 
 #library(R.matlab)
 
-ncpath <- "/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/"
+ncpath <- "/Users/choerstm/Documents/MIO_FIGURE/Oceanography/"
 ncname <- "20220726_nrt_cmems_d0_lambda_only"  
 
 ncfname <- paste(ncpath, ncname, ".nc", sep="")

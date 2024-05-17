@@ -5,9 +5,9 @@ require(viridis)
 
 #load the data
 
-IRMS <- read.csv2("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/synthese_MESURE_FIGURE_IRMS.csv", header = TRUE, sep = ";")
+IRMS <- read.csv2("/Users/choerstm/Documents/MIO_FIGURE/N2_data/synthese_MESURE_FIGURE_IRMS.csv", header = TRUE, sep = ";")
 
-MIMS <- read.csv2("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/synthèse_analyses_FIGURE_Mar_tot.csv", header = TRUE, sep = ";")
+MIMS <- read.csv2("/Users/choerstm/Documents/MIO_FIGURE/N2_data/synthèse_analyses_FIGURE_Mar_tot.csv", header = TRUE, sep = ";")
 
 #The sample names are not identical so to match we need to create a column with station names
 
@@ -48,7 +48,7 @@ N2_data_all_CTD <- dplyr::left_join(N2_IRMS_CTD, N2_NA_CTD[,c(1:3,15)], by = c("
 
 #Underway
 
-UW_N2_log <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/N2_UW_log.csv")
+UW_N2_log <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/N2_data/N2_UW_log.csv")
 
 IRMS_UW <- IRMS%>%filter(str_detect(Name, "UW"))
 IRMS_UW$Station = IRMS_UW$Name
@@ -127,8 +127,8 @@ N2_UW$N2 <- (N2_UW$PN_nmol_L * (N2_UW$at_enriched - N2_UW$at_NA))/((N2_UW$label_
 
 #calculate mean N2 rates
 
-N2_fromR <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/R_N2_all_data.csv")
+N2_fromR <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/N2_data/R_N2_all_data.csv")
 
 ## Previous data
 
-DB_N2_Strucutres <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/N2_data/Satellite_N2_DB/N2_eddies_NorthAtlantic_mean.csv")
+DB_N2_Strucutres <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/N2_data/Satellite_N2_DB/N2_eddies_NorthAtlantic_mean.csv")

@@ -1,6 +1,6 @@
-ASV16S <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/seqtab_all_FIGURE_16S.csv", row.names = 1)
-taxonomy_16S <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/taxonomy_FIGURE_16S_SILVAv138.1.csv", sep = ";", row.names = 1)
-meta_16S_4ADCP <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/meta_16S_forADCP.csv")
+ASV16S <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/seqtab_all_FIGURE_16S.csv", row.names = 1)
+taxonomy_16S <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/sequences/16S_50-861646108/taxonomy_FIGURE_16S_SILVAv138.1.csv", sep = ";", row.names = 1)
+meta_16S_4ADCP <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/meta_16S_forADCP.csv")
 colnames(ASV16S) <- gsub("X", "", colnames(ASV16S))
 colnames(ASV16S) <- gsub(".16S", "", colnames(ASV16S))
 

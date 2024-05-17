@@ -1,6 +1,6 @@
-u <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/ADCP_4Cora_nb_u.csv", sep = ";")
-v <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/ADCP_4Cora_nb_v.csv", sep = ";")
-w <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/allbins_w.txt", sep = ";")
+u <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/ADCP_4Cora_nb_u.csv", sep = ";")
+v <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/ADCP_4Cora_nb_v.csv", sep = ";")
+w <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/allbins_w.txt", sep = ";")
 #ADCP_direction <- (180/3.14) * atan2(u[,c(3)],v[,c(3)])
 u[u==1e+38] <- NA
 v[v==1e+38] <- NA

@@ -42,7 +42,7 @@ rm(ADCP_cyclonic_eddy_west_R, ADCP_cyclonic_eddy_west, ADCP_cyclonic_eddy_east, 
 
 #import .mat file
 require(R.matlab)
-ow.mat <- readMat("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/20220725_nrt_cmems_d0.mat")
+ow.mat <- readMat("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/20220725_nrt_cmems_d0.mat")
 ow <- ow.mat$owmi
 ow_calc <- (60*60*24)^2*ow
 ow_calc <- as.data.frame(ow_calc)
