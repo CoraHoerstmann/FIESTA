@@ -40,7 +40,7 @@ fnRs.primerCut3 <- file.path(primerCut3_dir,basename(fnRs.raw))
 fnFs.qualFiltTrim <- file.path(qualFiltTrim_dir,basename(fnFs.raw))
 fnRs.qualFiltTrim <- file.path(qualFiltTrim_dir,basename(fnRs.raw))
 
-#Qulaity check
+#Quality check
 
 plotQualityProfile(fnFs.raw[1:4])
 plotQualityProfile(fnRs.raw[1:4])

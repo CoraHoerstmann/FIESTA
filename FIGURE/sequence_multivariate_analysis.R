@@ -4,9 +4,9 @@ require(ggbiplot)
 require(vegan)
 require("wesanderson"); packageVersion("wesanderson")
 require("fantaxtic"); packageVersion("fantaxtic")
+require("ggords")
 
-
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/RDA_function.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/RDA_function.R")
 
 nifH_meta$Main_Bin <- paste(nifH_meta$Pysical_Classification, nifH_meta$Desired_Depth..m., sep= "_")
 nifH_meta$Main_Bin <- factor(nifH_meta$Main_Bin, levels = unique(nifH_meta$Main_Bin[order(nifH_meta$Int_Order)]))
@@ -247,7 +247,7 @@ nifHM_CTD <- left_join(nifHM_CTD, nifH_meta[,c(2,4,23,25,26)], by = "No")
 
 #Identify metadata which contributes significantly
 
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/FIGURE_ordistep.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/FIGURE_ordistep.R")
 
 ordi(ALL_CTD, nifHM_CTD[,c(1,2,17,18,19,21,30:32,34:35)])
 
@@ -257,7 +257,7 @@ nifH_meta_CTD_nNA <- na.omit(nifH_meta_CTD_nNA)
 stations_with_N2 <- as.character(nifH_meta_CTD_nNA$No)
 ALL_CTD_nNA <- ALL_CTD%>%dplyr::select(stations_with_N2)
 
-ordi(ALL_CTD_nNA, nifH_meta_CTD_nNA)
+#ordi(ALL_CTD_nNA, nifH_meta_CTD_nNA)
 meta_sig <- c("swell", "Actual_Depth..m.")
 
 

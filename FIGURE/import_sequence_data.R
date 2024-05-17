@@ -1,6 +1,6 @@
-nifH_ASV <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/seqtab_all_FIGURE_nifH.csv", row.names = 1)
-nifH_taxonomy_v1 <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/ASVs_Taxonomy_FIGURE_nifH20230411.tsv", sep = "\t")
-nifH_taxonomy_v2 <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/ASVs_Taxonomy_FIGURE_nifH20230411_v2_0_5.tsv", sep = "\t")
+nifH_ASV <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/seqtab_all_FIGURE_nifH.csv", row.names = 1)
+nifH_taxonomy_v1 <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/ASVs_Taxonomy_FIGURE_nifH20230411.tsv", sep = "\t")
+nifH_taxonomy_v2 <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/sequences/nifH_20230410/ASVs_Taxonomy_FIGURE_nifH20230411_v2_0_5.tsv", sep = "\t")
 rownames(nifH_taxonomy_v2) <- nifH_taxonomy_v2$X
 
 colnames(nifH_ASV) <- gsub("X", "", colnames(nifH_ASV))
@@ -64,7 +64,7 @@ nifH_meta_withW <- left_join(nifH_meta, ADCP_wR, by = c("Latitude_2", "Longitude
 ##note also that the first UW samples and Station 8 ADCP was taken slightly off since ADCP didn't record at the station directly
 #write.csv(nifH_meta_withW, "nifH_meta_all_metadata_joinedInR_W.csv")
 
-nifH_meta <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/DNA/nifH_meta_all_metadata_joinedInR.csv")
+nifH_meta <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/DNA/nifH_meta_all_metadata_joinedInR.csv")
 
 ##CLEAN UP 
 rm(nif_meta, nifH_meta2, nifh_meta_f, nif_meta2, nif_meta_f, nif_meta2t, nifH_meta_withW)

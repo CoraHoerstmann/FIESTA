@@ -12,7 +12,8 @@ require(oce)
 require(ocedata)
 require(anytime) #date format is unambigious for base function
 require(reshape2)
-require(dada2); packageVersion("dada2")
+require(vegan)
+#require(dada2); packageVersion("dada2")
 
 #for printing the oceanographic maps:
 library("rnaturalearth")
@@ -21,35 +22,36 @@ library("ggplot2")
 library("sf")
 
 #for 3D plots
-library("plot3D") #IMPORTATNT: This needs XQUARTZ to run in the background
+#library("plot3D") #IMPORTATNT: This needs XQUARTZ to run in the background
 library(akima) #for the 3D extraploate representation
 library(raster)
+library(devtools)
 ```
 
 
 ```{r physics, echo=FALSE, warning = FALSE, fig.width=7,fig.height=2.5, fig.show="hold", out.width="50%"}
- all_data <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/FIGURE_all_data.csv")
+ all_data <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/FIGURE_all_data.csv")
 #CTD data and plot (to be adjusted)
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/oceanographic_data.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/ADCP.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_CTD_log.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/oceanographic_data.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/ADCP.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_CTD_log.R")
 
 
 #note that this important subscripts are loaded:
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/oceanography_plots.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/oceanography_plots.R")
 
 
 ```
 #import nutrients
 
 ```{r}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_nutrients.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_nutrients.R")
 ```
 
 #import N2
 
 ```{r N2}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_N2.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_N2.R")
 ```
 
 check tutorial here:
@@ -82,7 +84,7 @@ t.test(N2 ~ SimplifiedStructure, data = N2_mean_Hoerstmann)
 
 
 ```{r DNA}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_DNA.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_DNA.R")
 ```
 
 
@@ -148,20 +150,20 @@ mean(ADCP_speed_noNA_St0_1$speed_74.93)
 
 
 ```{r N2 plots, echo=FALSE}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/3D_plot_plotly.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/3D_plot_plotly.R")
 ```
 
 ```{r qPCR plots, echo=FALSE}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/DNA_plot.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/DNA_plot.R")
 ```
 
 
 ## Sequence analysis
 
 ```{r}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/data_transformation.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_sequence_data.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/import_16S.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/data_transformation.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_sequence_data.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_16S.R")
 ```
 
 CLR transformation
@@ -173,21 +175,21 @@ nifH_taxonomy_CLR <- nifH_taxonomy_v2%>%filter(X %in% rownames(nifH_ASV_CLR))
 ```
 multivariate analysis
 ```{r}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/sequence_multivariate_analysis.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/16S_multivariateAnalysis.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/sequence_multivariate_analysis.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/16S_multivariateAnalysis.R")
 #important subscript loaded within file
-#source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/RDA_function.R")
+#source("/Users/choerstm/Documents/MIO_FIGURE/scripts/RDA_function.R")
 ```
 
 hierarchical clustering
 ```{r}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/Hclust_comparison.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/Hclust_comparison.R")
 ```
 
 
 #eddys in the North Atlantic
 ```{r}
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/eddy_N2_compiled_Data_NorthAtlantic.R")
-source("/Users/corahoerstmann/Documents/MIO_FIGURE/scripts/stats_model_output.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/eddy_N2_compiled_Data_NorthAtlantic.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/stats_model_output.R")
 ```
 

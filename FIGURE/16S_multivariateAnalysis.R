@@ -33,19 +33,18 @@ a16S_meta$Main_Bin <- factor(a16S_meta$Main_Bin, levels = unique(a16S_meta$Main_
 a16S_AC <- a16S_meta%>%filter(str_detect(Pysical_Classification, "AC"))%>% 
   cbind(broad_Structure = paste0("AC"))
 
-a16S_C <- a16S_meta%>%filter(str_detect(Pysical_Classification, " C"))%>% 
+a16S_C <- a16S_meta%>%filter(str_detect(Pysical_Classification, " C"))
+
+a16S_GS_C <- a16S_C%>%filter(str_detect(Pysical_Classification, "GS/"))%>% 
+  cbind(broad_Structure = paste0("GS/C"))
+
+a16S_C <- a16S_C%>%filter(!str_detect(Pysical_Classification, "GS/"))%>% 
   cbind(broad_Structure = paste0("C"))
 
-a16S_GS_C <- a16S_C%>%filter(str_detect(Pysical_Classification, "GS/"))
+a16S_GS <- a16S_meta%>%filter(str_detect(Pysical_Classification, "GS"))
 
-a16S_GS_C$broad_Structure <- "GS/C"
-
-a16S_C <- a16S_C%>%filter(!str_detect(Pysical_Classification, "GS/"))
-
-a16S_GS <- a16S_meta%>%filter(str_detect(Pysical_Classification, "GS"))%>% 
+a16S_GS <- a16S_GS%>%filter(!str_detect(Pysical_Classification, "GS/"))%>% 
   cbind(broad_Structure = paste0("GS"))
-
-a16S_GS <- a16S_GS%>%filter(!str_detect(Pysical_Classification, "GS/"))
 
 a16S_OO <- a16S_meta%>%filter(str_detect(Pysical_Classification, "open"))%>% 
   cbind(broad_Structure = paste0("open_ocean"))
@@ -127,7 +126,7 @@ print(adonis2(
 
 ## Vertical vel along stations (subset of St 0-2)
 ST16S <- c("St 0 C1", "St 1 C2", "St 2 C2")
-a16S_meta_ST <- a16S_meta%>%filter(Sampling_method %in% ST16S)
+a16S_meta_ST <- a16S_meta%>%dplyr::filter(Sampling_method %in% ST16S)
 a16S_meta_ST$No <- as.character(a16S_meta_ST$No)
 ASV16S_ST <- ASV16S%>%dplyr::select(a16S_meta_ST$No)
 ASV_16S_STait <- dczm(ASV16S_ST,1)
@@ -146,3 +145,4 @@ a16S_groupDistances <- left_join(a16S_groupDistances, a16S_CTD_VV, by = "Samplin
 
 cor_Dw <- cor.test(a16S_groupDistances$`mod_small$group.distances`, -(a16S_groupDistances$mean_w), method="pearson")
 cor_Dw
+

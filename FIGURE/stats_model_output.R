@@ -1,27 +1,49 @@
 
 require(geosphere)
 
-stats_CE <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/Model_output/Stats_cyclonic_eddies_atlas.csv")
-stats_ACE <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/Model_output/Stats_AC_atlas.csv")
-model_polygons <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/Model_output/Model_Polygons.csv")
+stats_CE <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/Model_output/Stats_cyclonic_eddies_atlas.csv")
+stats_ACE <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/Model_output/Stats_AC_atlas.csv")
+model_polygons <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/Model_output/Model_Polygons.csv")
 stats_CE_summer <- stats_CE%>%filter(Start.Time..month. == c(1,2,3))
 
 ##N2 values that will be used to calculate N input
 N2_mean_all_data_eddy_C <- N2_eddies_NorthAtlantic_mean_annotated%>%filter(str_detect(Structure, "NA-C"))
 N2_mean_all_data_eddy_C <- N2_mean_all_data_eddy_C%>%filter(DEPTH..m. < 100)
 N2_mean_all_data_eddy_C <- N2_mean_all_data_eddy_C%>%filter(LATITUDE > 32.5)
+N2_mean_all_data_eddy_C_SFC <- N2_mean_all_data_eddy_C%>%filter(DEPTH..m. < 10)
+N2_mean_all_data_eddy_C_below <- N2_mean_all_data_eddy_C%>%filter(DEPTH..m. > 10)
 
 N2_mean_all_data_eddy_AC <- N2_eddies_NorthAtlantic_mean_annotated%>%filter(str_detect(Structure, "NA-AC"))
 N2_mean_all_data_eddy_AC <- N2_mean_all_data_eddy_AC%>%filter(DEPTH..m. < 100)
 N2_mean_all_data_eddy_AC <- N2_mean_all_data_eddy_AC%>%filter(LATITUDE > 32.5)
+N2_mean_all_data_eddy_AC_SFC <- N2_mean_all_data_eddy_AC%>%filter(DEPTH..m. < 10)
+N2_mean_all_data_eddy_AC_below <- N2_mean_all_data_eddy_AC%>%filter(DEPTH..m. > 10)
 
 N2_open_ocean <- N2_eddies_NorthAtlantic_mean_annotated%>%filter((str_detect(Structure, "NA-O")))
 N2_open_ocean <- N2_open_ocean%>%filter(DEPTH..m. < 100)
 N2_open_ocean <- N2_open_ocean%>%filter(LATITUDE > 32.5)
+N2_open_ocean_SFC <- N2_open_ocean%>%filter(DEPTH..m. < 10)
+N2_open_ocean_below <- N2_open_ocean%>%filter(DEPTH..m. > 10)
 
 mean(N2_mean_all_data_eddy_C$N2)
+sd(N2_mean_all_data_eddy_C$N2)
+mean(N2_mean_all_data_eddy_C_SFC$N2)
+sd(N2_mean_all_data_eddy_C_SFC$N2)
+mean(N2_mean_all_data_eddy_C_below$N2)
+sd(N2_mean_all_data_eddy_C_below$N2)
+
 mean(N2_open_ocean$N2)
+sd(N2_open_ocean$N2)
+mean(N2_open_ocean_SFC$N2)
+sd(N2_open_ocean_SFC$N2)
+mean(N2_open_ocean_below$N2)
+sd(N2_open_ocean_below$N2)
+
 mean(N2_mean_all_data_eddy_AC$N2)
+sd(N2_mean_all_data_eddy_AC$N2)
+mean(N2_mean_all_data_eddy_AC_SFC$N2)
+sd(N2_mean_all_data_eddy_AC_SFC$N2)
+mean(N2_mean_all_data_eddy_AC_below$N2)
 ##########
 
 df_C_minmax = data.frame()
@@ -34,6 +56,8 @@ df_C_minmax$Lat <- as.numeric(Lat)
 #function returns m2 so turn into m3 across 100m depth
 geosphere::areaPolygon(df_C_minmax)*100
 geosphere::areaPolygon(df_C_minmax)
+#returns the CE effect range: 7.7 * 10^11
+
 CE_box <- ggplot(data = world) +
   geom_sf() +
   geom_polygon(data = model_polygons, aes(x = C_lon, y = C_lat), size = 1, color = "blue", fill = NA)+
@@ -66,16 +90,16 @@ stats_CE$volume <- stats_CE$area*100
 #conservative: remove those eddies that are not alive during the summer
 stats_CE$eddy_ID <- paste0("eddy_", seq.int(nrow(stats_CE)))
 stats_CE_conservative <- stats_CE%>%filter(End.Time..month. > 5)
-stats_CE_conservative <- stats_CE_conservative%>%filter(Start.Time..month. < 9)
+stats_CE_conservative <- stats_CE_conservative%>%filter(Start.Time..month. < 10)
 stats_CE_conservative$analysis <- "YES"
 stats_CE_non_conservative <- stats_CE%>%filter(!eddy_ID %in% stats_CE_conservative$eddy_ID)
 stats_CE_non_conservative$analysis <- "NO"
 stats_CE_tableS4 <- rbind(stats_CE_conservative, stats_CE_non_conservative)
-#write.csv(stats_CE_tableS4, "/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/stats_CE_conservative.csv")
+#write.csv(stats_CE_tableS4, "/Users/choerstm/Documents/MIO_FIGURE/Manuscript/SUBMISSION/REVISION1/Table_S4.csv")
 #calculate averages per year
 
 
-#write.csv(stats_CE_conservative, "/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/stats_CE_conservative.csv")
+#write.csv(stats_CE_conservative, "/Users/choerstm/Documents/MIO_FIGURE/Oceanography/stats_CE_conservative.csv")
 #calculate averages per year
 
 stats_CE_conservative_average_year <- stats_CE_conservative%>%group_by(Start.Time..year.)%>%
@@ -91,6 +115,9 @@ mean(N2_mean_all_data_eddy_C$N2)*100*100
 #Integrate over 100m depth and receive umol N m-2 d-1
 mean(N2_mean_all_data_eddy_C$N2)*100*100/1000
 
+#159.82 umol Nm-2 d-1
+
+
 N2_mean_all_data_eddy_C%>%filter(REF == "Hoerstmann")%>%
   summarise((mean(N2)/1000))
 N2_mean_all_data_eddy_C%>%filter(REF == "Shao")%>%
@@ -99,6 +126,7 @@ N2_mean_all_data_eddy_C%>%filter(REF == "Shao")%>%
 #Big calculation
 #N input is nmol N per year total across all eddies - after that it needs to be normalized to the gridbox
 N2_mean_all_data_eddy_C$N2_m3 <- N2_mean_all_data_eddy_C$N2*1000
+N2_open_ocean$N2_m3 <- N2_open_ocean$N2*1000
 stats_CE_conservative_average_year$N_input_eddies_total <- (mean(N2_mean_all_data_eddy_C$N2_m3))*stats_CE_conservative_average_year$Lifetime_mean*stats_CE_conservative_average_year$volume_mean*stats_CE_conservative_average_year$n
 stats_CE_conservative_average_year$N_input_eddies_total_if_no_eddy <- (mean(N2_open_ocean$N2_m3))*stats_CE_conservative_average_year$Lifetime_mean*stats_CE_conservative_average_year$volume_mean*stats_CE_conservative_average_year$n
 stats_CE_conservative_average_year$N_input_eddies_total_future <- (mean(N2_mean_all_data_eddy_C$N2_m3))*stats_CE_conservative_average_year$Lifetime_mean*stats_CE_conservative_average_year$volume_mean*(stats_CE_conservative_average_year$n*0.97)
@@ -110,8 +138,6 @@ mean(stats_CE_conservative_average_year$N_input_eddies_total)/mean(stats_CE_cons
 mean(N2_open_ocean$N2)*1000
 #0.0001854857
 
-N2_open_ocean$N2_m3 <- N2_open_ocean$N2*1000
-
 #N input in the polygon across 100m depth and per year
 #4.288767e+13 m3
 stats_CE_conservative_average_year$N_input_non_eddying_ocean<- (mean(N2_open_ocean$N2_m3))*areaPolygon(df_C_minmax)*100*365
@@ -119,6 +145,17 @@ stats_CE_conservative_average_year$N_input_non_eddying_ocean<- (mean(N2_open_oce
 stats_CE_conservative_average_year$Vol_year_no_eddy <- (areaPolygon(df_C_minmax)*100*365)-(stats_CE_conservative_average_year$volume_mean*stats_CE_conservative_average_year$n*stats_CE_conservative_average_year$Lifetime_mean)
 stats_CE_conservative_average_year$N2input_year_noEddy_eddyOcean <- stats_CE_conservative_average_year$Vol_year_no_eddy*(mean(N2_open_ocean$N2_m3))
 stats_CE_conservative_average_year$N2input_year_eddy_ocean <- stats_CE_conservative_average_year$N2input_year_noEddy_eddyOcean + stats_CE_conservative_average_year$N_input_eddies_total
+
+#N_input_eddies_total
+##This gives you the total N2 input from cyclonic eddies (without ambient waters)
+
+#N2input_year_noEddy_eddyOcean
+##This give you the total N2 input in the ambient waters (i.e., Total area- area all cyclones)
+
+#N2input_year_eddy_ocean
+##This gives you the total N2 input from eddies and ambient waters together
+
+
 #Future scenario:
 #substract the area/time coverd by the eddies: returns you the m3 per year
 stats_CE_conservative_average_year$Vol_year_no_eddy_future <- (areaPolygon(df_C_minmax)*100*365)-(stats_CE_conservative_average_year$volume_mean*stats_CE_conservative_average_year$n*0.97*stats_CE_conservative_average_year$Lifetime_mean)
@@ -161,6 +198,8 @@ sd(stats_CE_conservative_average_year$PERCENT_EddyContribution_Ninput)
 
 stats_CE_conservative_average_year_new$PERCENT_EddyContribution_Ninput_future <- (stats_CE_conservative_average_year_new$N2input_year_Eddy_global_estimate_future - stats_CE_conservative_average_year_new$N2input_year_noEddy_global_estimate_future)/stats_CE_conservative_average_year_new$N2input_year_Eddy_global_estimate_future*100
 mean(stats_CE_conservative_average_year_new$PERCENT_EddyContribution_Ninput_future)
+
+##0.058 (as in MS)
 #plot?
 
 stats_CE_conservative_average_year_longer <- stats_CE_conservative_average_year%>%gather(key = "scenario", value = "N_input", N2input_year_eddy_ocean,N_input_non_eddying_ocean)
@@ -296,12 +335,12 @@ stats_ACE$volume <- stats_ACE$area*100
 #conservative: remove those eddies that are not alive during the summer
 stats_ACE$eddy_ID <- paste0("eddy_", seq.int(nrow(stats_ACE)))
 stats_ACE_conservative <- stats_ACE%>%filter(End.Time..month. > 5)
-stats_ACE_conservative <- stats_ACE_conservative%>%filter(Start.Time..month. < 9)
+stats_ACE_conservative <- stats_ACE_conservative%>%filter(Start.Time..month. < 10)
 stats_ACE_conservative$analysis <- "YES"
 stats_ACE_non_conservative <- stats_ACE%>%filter(!eddy_ID %in% stats_ACE_conservative$eddy_ID)
 stats_ACE_non_conservative$analysis <- "NO"
 stats_ACE_tableS4 <- rbind(stats_ACE_conservative, stats_ACE_non_conservative)
-#write.csv(stats_ACE_tableS4, "/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/stats_ACE_conservative.csv")
+#write.csv(stats_ACE_tableS4, "/Users/choerstm/Documents/MIO_FIGURE/Manuscript/SUBMISSION/REVISION1/stats_ACE_conservative.csv")
 #calculate averages per year
 
 stats_ACE_conservative_average_year <- stats_ACE_conservative%>%group_by(Start.Time..year.)%>%
@@ -343,6 +382,7 @@ stats_ACE_conservative_average_year$Vol_year_no_eddy_future <- (areaPolygon(df_A
 stats_ACE_conservative_average_year$N2input_year_noEddy_eddyOcean_future <- stats_ACE_conservative_average_year$Vol_year_no_eddy_future*(mean(N2_open_ocean$N2)*1000)
 stats_ACE_conservative_average_year$N2input_year_eddy_ocean_future <- stats_ACE_conservative_average_year$N2input_year_noEddy_eddyOcean_future + stats_ACE_conservative_average_year$N_input_eddies_total_future
 
+stats_ACE_conservative_average_year$N2input_year_eddy_ocean_future/stats_ACE_conservative_average_year$N2input_year_eddy_ocean
 
 #Check whether times and volumes match
 
@@ -362,7 +402,7 @@ stats_ACE_conservative_average_year_new <- stats_ACE_conservative_average_year%>
 stats_ACE_conservative_average_year_new$N2input_year_noEddy_global_estimate_future <- (((stats_ACE_conservative_average_year_new$N_input_non_eddying_ocean*100*100)/(areaPolygon(df_AC_minmax)*100))/1000000000)/100
 stats_ACE_conservative_average_year_new$N2input_year_Eddy_global_estimate_future <- (((stats_ACE_conservative_average_year_new$N2input_year_eddy_ocean_future*100*100)/(areaPolygon(df_AC_minmax)*100))/1000000000)/100
 
-
+stats_ACE_conservative_average_year_new$N2input_year_Eddy_global_estimate_future/stats_ACE_conservative_average_year_new$N2input_year_Eddy_global_estimate
 
 #PERCENTAGE
 

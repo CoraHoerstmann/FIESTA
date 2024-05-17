@@ -1,6 +1,6 @@
 
-CTD_logs <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/CTDCastSheets_FIGURE-CARING/SUMMARY_CTD_CASTS_FIGURE.csv")
-ADCP <- read.csv("/Users/corahoerstmann/Documents/MIO_FIGURE/Oceanography/Stephanie_20230419/Attribute_TABLE.csv")
+CTD_logs <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/CTDCastSheets_FIGURE-CARING/SUMMARY_CTD_CASTS_FIGURE.csv")
+ADCP <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/Oceanography/Stephanie_20230419/Attribute_TABLE.csv")
 
 ADCP$direction <- (180/3.14) * raster::atan2((ADCP$uship),(ADCP$vship))
 ADCP$speed <- sqrt(((ADCP$uship)^2 + (ADCP$vship)^2))
