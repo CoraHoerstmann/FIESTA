@@ -1,1 +1,16 @@
-README
+Scripts for all statistical analysis to
+### Nitrogen fixation in the North Atlantic supported by Gulf Stream eddy-borne diazotrophs
+
+by Hoerstmann et al.
+
+scripts_import 
+include the files importing all datasets including the CTD data, nutrient data, qPCR results, amplicon 16S and nifH sequences and N2 fixation rates
+
+scripts_analysis
+include all files with plots and statistical analysis
+
+Workflow is combined in the FIGURE_CARING_FIESTA.Rmd file
+
+if you need the knitted version or if you have any questions please contact:
+
+cora.hoerstmann@awi.de
