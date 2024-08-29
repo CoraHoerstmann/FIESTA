@@ -1,0 +1,187 @@
+---
+title: "FIGURE-CARING_FIESTA"
+author: "CoraHoerstmann"
+date: "2024-08-29"
+output: html_document
+---
+
+```{r setup, echo=TRUE, message=TRUE, warning=FALSE}
+require(dplyr); packageVersion("dplyr")
+require(tidyverse); packageVersion("tidyverse")
+require(oce); packageVersion("oce")
+require(ocedata); packageVersion("ocedata")
+require(anytime); packageVersion("anytime") #date format is unambigious for base function
+require(reshape2); packageVersion("reshape2")
+require(vegan); packageVersion("vegan")
+require(stats); packageVersion("stats")
+require(ggpmisc); packageVersion("ggpmisc") #needed for sd calculation of regression
+#require(dada2); packageVersion("dada2")
+
+#for printing the oceanographic maps:
+library("rnaturalearth"); packageVersion("rnaturalearth")
+library("rnaturalearthdata"); packageVersion("rnaturalearthdata")
+library("ggplot2"); packageVersion("ggplot2")
+library("sf"); packageVersion("sf")
+library("geosphere"); packageVersion("geosphere")
+#for sequences normalization
+library("zCompositions"); packageVersion("zCompositions")
+
+#for Hclust comparisons
+library(dendextend); packageVersion("dendextend")
+library(colorspace); packageVersion("colorspace") # get nice colors
+library(stats); packageVersion("stats")
+
+#for multivariate analysis
+require("phyloseq"); packageVersion("phyloseq")
+require(ggbiplot); packageVersion("ggbiplot")
+require("wesanderson"); packageVersion("wesanderson")
+require("fantaxtic"); packageVersion("fantaxtic")
+
+#for 3D plots
+#library("plot3D") #IMPORTATNT: This needs XQUARTZ to run in the background
+library(akima); packageVersion("akima") #for the 3D extraploate representation
+library(raster); packageVersion("raster")
+library(devtools); packageVersion("devtools")
+```
+
+
+```{r physics, echo=FALSE, warning = FALSE, message=FALSE,fig.width=6,fig.height=4, fig.show="hold", out.width="50%"}
+all_data <- read.csv("/Users/choerstm/Documents/MIO_FIGURE/FIGURE_all_data.csv")
+#CTD data and plot (to be adjusted)
+source("/Users/choerstm/Documents/MIO_FIGURE/oceanographic_data.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/ADCP.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_CTD_log.R")
+
+
+#note that this important subscripts are loaded:
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/oceanography_plots.R")
+
+```
+#import nutrients and P* calculation
+
+```{r, echo=FALSE, message=TRUE, warning=FALSE, fig.width=5,fig.height=5, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_nutrients.R")
+```
+
+#import N2
+
+```{r N2_import, echo=FALSE, message=TRUE, warning=FALSE}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_N2.R")
+```
+# Statistics with N2 measurements
+
+```{r N2 stats, echo=FALSE, message=TRUE, warning=FALSE}
+
+#check whether east of the GS match those of previous measurements
+N2_east <- DB_N2_Strucutres%>%filter(str_detect(Structure, "NA-"))
+N2_east <- N2_east%>%filter(DEPTH..m. < 110)
+t.test(N2 ~ REF, data = N2_east)
+
+#check whether our eddy rates are higher than within Gulf Stream
+
+N2_mean_Hoerstmann <- DB_N2_Strucutres%>%filter(REF == "Hoerstmann")
+N2_mean_Hoerstmann <- N2_mean_Hoerstmann%>%filter(!str_detect(Structure, "shelf"))
+N2_mean_Hoerstmann <- N2_mean_Hoerstmann%>%filter(!Structure == "NA-GS-affected")
+
+N2_mean_Hoerstmann_eddy <- N2_mean_Hoerstmann%>%filter(!Structure == "GS")%>%
+  cbind(SimplifiedStructure = paste0("eddy"))
+N2_mean_Hoerstmann_GS <- N2_mean_Hoerstmann%>%filter(Structure == "GS")%>%
+  cbind(SimplifiedStructure = paste0("GS"))
+
+N2_mean_Hoerstmann <- rbind(N2_mean_Hoerstmann_eddy, N2_mean_Hoerstmann_GS)
+t.test(N2 ~ SimplifiedStructure, data = N2_mean_Hoerstmann)
+#west of the GS only check whether it's in the range (due to low sample size)
+```
+
+## import qPCR data 
+```{r qPCR_import, echo=FALSE, message=TRUE, warning=FALSE}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_DNA.R")
+```
+
+
+
+```{r map, echo=FALSE, message=TRUE, warning=FALSE, fig.width=5,fig.height=5, fig.show="hold", out.width="50%"}
+stationmap_CTD <- ggplot(data = world) +
+  geom_sf() +
+  
+  geom_point(data = qPCR_UW, aes(x = Longitude, y = Latitude), size = 1, 
+             shape = 23, fill = "orange") +
+  geom_point(data = N2_UW, aes(x = Longitude, y = Latitude), size = 1, 
+             shape = 23, fill = "gold1") +
+  geom_point(data = CTD_N2, aes(x = Longitude, y = Latitude), size = 1.5, 
+             shape = 23, fill = "darkgreen") +
+  coord_sf(xlim = c(-85, -60), ylim = c(30, 45), expand = FALSE)
+
+print(stationmap_CTD)
+
+#calculate distance between points
+
+all_data_distances <- all_data[,c(3:5,10)]
+my_points <- all_data_distances[c(25,68),c(2,3)]
+my_points$Latitude <- NULL
+my_points$Latitude <- all_data_distances[c(25,68),2]
+dist_mat <- distm(my_points, fun = distGeo) #result in m
+
+256190.1/1000
+
+#average speed between station 0 and 1
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA[,c(4,7,8)]
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA_St0_1%>%filter(Longitude < -68.99790)
+ADCP_speed_noNA_St0_1 <- ADCP_speed_noNA_St0_1%>%filter(Longitude > -70.99585)
+mean(ADCP_speed_noNA_St0_1$speed_74.93)
+(1/mean(ADCP_speed_noNA_St0_1$speed_74.93))*256190.1
+1048287/60/60/24
+```
+
+
+```{r N2 plots, echo=FALSE}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/3D_plot_plotly.R")
+```
+## qPCR plots
+```{r qPCR plots, echo=FALSE, fig.width=5,fig.height=2.5, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/DNA_plot.R")
+```
+
+## Sequence data import
+
+```{r sequence_import, echo=FALSE, message=TRUE, warning=FALSE}
+#Aitchison distance and CLR transformation
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/data_transformation.R")
+#import nifH amplicon sequences
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_sequence_data.R")
+#import 16S rDNA amplicon sequences
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/import_16S.R")
+```
+
+### CLR transformation
+```{r}
+nifH_ASV_CLR <- clr(nifH_ASV,1)
+nifH_ait <- dczm(nifH_ASV,1)
+nifH_taxonomy_CLR <- nifH_taxonomy_v2%>%filter(X %in% rownames(nifH_ASV_CLR))
+```
+## multivariate analysis
+```{r Sequence_analysis, echo=FALSE, message=TRUE, warning=FALSE, fig.width=5,fig.height=5, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/sequence_multivariate_analysis.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/16S_multivariateAnalysis.R")
+#important subscript loaded within file
+#source("/Users/choerstm/Documents/MIO_FIGURE/scripts/RDA_function.R")
+```
+
+hierarchical clustering
+```{r clustering, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5,fig.height=5, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/Hclust_comparison.R")
+```
+
+
+# eddys in the North Atlantic
+```{r N_input_extrapolation, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5,fig.height=3, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/eddy_N2_compiled_Data_NorthAtlantic.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/stats_model_output.R")
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/stats_model_output_edge.R")
+```
+# future ocean with increased anticyclonic eddy activity
+
+```{r future_trends, echo=FALSE, message=FALSE, warning=FALSE, fig.width=5,fig.height=3, fig.show="hold", out.width="50%"}
+source("/Users/choerstm/Documents/MIO_FIGURE/scripts/Eddys_Future_Trends.R")
+```
+
